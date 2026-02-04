@@ -24,6 +24,7 @@
 
 <script>
 import { PostService } from '@/services/post';
+import { EventBus } from '@/services/eventBus';
 
 export default {
   data() {
@@ -51,6 +52,14 @@ export default {
 
   async mounted() {
     await this.fetchPosts();
+
+    // Listen for updates from other components
+    EventBus.on('posts-updated', this.fetchPosts);
+  },
+
+  beforeUnmount() {
+    // Clean up listener
+    EventBus.off('posts-updated', this.fetchPosts);
   },
 
   methods: {

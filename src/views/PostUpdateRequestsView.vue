@@ -23,6 +23,7 @@
 
 <script>
 import { PostService } from '@/services/post';
+import { EventBus } from '@/services/eventBus';
 
 export default {
   data() {
@@ -54,6 +55,9 @@ export default {
       await PostService.approve(this.$keycloak, id);
       alert('Approved');
       await this.fetchRequests();
+
+      // Emit event to notify other components
+      EventBus.emit('posts-updated');
     },
 
     async reject(id) {

@@ -8,7 +8,7 @@
     </div>
 
     <div v-else>
-      <p><strong>Roles:</strong> {{ roles.join(', ') }}</p>
+      <!-- <p><strong>Roles:</strong> {{ roles.join(', ') }}</p> -->
       <button @click="logout">Logout</button>
 
       <!-- Show user profile -->
