@@ -1,22 +1,58 @@
 <template>
-  <div>
-    <h2>Post Update Requests</h2>
+  <div class="card">
+    <div class="card-header fw-bold">
+      Post Update Requests
+    </div>
 
-    <div v-if="isEditorOrAdmin">
-      <div v-for="req in requests" :key="req.id" style="border-bottom:1px solid #ccc; padding:8px 0;">
-        <h4>Post ID: {{ req.post_id }}</h4>
-        <p><strong>Requested by:</strong> {{ req.requested_by }}</p>
-        <p><strong>Title:</strong> {{ req.title || '—' }}</p>
-        <p><strong>Content:</strong> {{ req.content || '—' }}</p>
-        <p><strong>Status:</strong> {{ req.status }}</p>
+    <div class="card-body" v-if="isEditorOrAdmin">
+      <div
+        v-for="req in requests"
+        :key="req.id"
+        class="card mb-3"
+      >
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            Post ID: {{ req.post_id }}
+          </h6>
 
-        <button @click="approve(req.id)" v-if="req.status === 'pending'">Approve</button>
-        <button @click="reject(req.id)" v-if="req.status === 'pending'">Reject</button>
+          <p><strong>Requested by:</strong> {{ req.requested_by }}</p>
+          <p><strong>Title:</strong> {{ req.title || '—' }}</p>
+          <p><strong>Content:</strong> {{ req.content || '—' }}</p>
+
+          <p>
+            <strong>Status:</strong>
+            <span
+              class="badge"
+              :class="{
+                'bg-warning': req.status === 'pending',
+                'bg-success': req.status === 'approved',
+                'bg-danger': req.status === 'rejected'
+              }"
+            >
+              {{ req.status }}
+            </span>
+          </p>
+
+          <div v-if="req.status === 'pending'" class="d-flex gap-2">
+            <button
+              class="btn btn-success btn-sm"
+              @click="approve(req.id)"
+            >
+              Approve
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              @click="reject(req.id)"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div v-else>
-      <p>You are not allowed to see update requests.</p>
+    <div v-else class="alert alert-danger m-3">
+      You are not allowed to see update requests.
     </div>
   </div>
 </template>

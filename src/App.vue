@@ -1,32 +1,64 @@
 <template>
   <div>
-    <h1>Keycloak Role-Based Demo</h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand">
+          Keycloak RBAC Demo
+        </span>
 
-    <!-- Login / Logout -->
-    <div v-if="!isAuthenticated">
-      <button @click="login">Login</button>
-    </div>
+        <button
+          v-if="isAuthenticated"
+          class="btn btn-outline-light btn-sm"
+          @click="logout"
+        >
+          Logout
+        </button>
+      </div>
+    </nav>
 
-    <div v-else>
-      <!-- <p><strong>Roles:</strong> {{ roles.join(', ') }}</p> -->
-      <button @click="logout">Logout</button>
-
-      <!-- Show user profile -->
-      <div>
-        <h2>User Details</h2>
-        <ul>
-          <li><strong>Username:</strong> {{ user.preferred_username }}</li>
-          <li><strong>Name:</strong> {{ user.name }}</li>
-          <li><strong>Email:</strong> {{ user.email }}</li>
-          <li><strong>Roles:</strong> {{ roles.join(', ') }}</li>
-        </ul>
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Login -->
+      <div v-if="!isAuthenticated" class="text-center mt-5">
+        <div class="card p-4 shadow-sm">
+          <h3 class="mb-3">Login Required</h3>
+          <button class="btn btn-primary btn-lg" @click="login">
+            Login with Keycloak
+          </button>
+        </div>
       </div>
 
-      <hr />
+      <!-- Authenticated -->
+      <div v-else>
+        <!-- User Info -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header fw-bold">User Details</div>
+          <div class="card-body">
+            <p><strong>Username:</strong> {{ user.preferred_username }}</p>
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
 
-      <!-- Role-Based Views -->
-      <PostsView v-if="canAccessPosts" :keycloak="$keycloak" />
-      <PostUpdateRequestsView v-if="canAccessRequests" :keycloak="$keycloak" />
+            <div>
+              <strong>Roles:</strong>
+              <span
+                v-for="r in roles"
+                :key="r"
+                class="badge bg-secondary me-1"
+              >
+                {{ r }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Based Views -->
+        <PostsView v-if="canReadPosts" :keycloak="$keycloak" />
+        <PostUpdateRequestsView
+          v-if="canAccessRequests"
+          :keycloak="$keycloak"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -58,6 +90,17 @@ export default {
     },
     isModerator() {
       return this.roles.includes('moderator');
+    },
+    isUser() {
+      return this.roles.includes('user');
+    },
+    // All roles can see posts
+    canReadPosts() {
+      return this.isAdmin || this.isEditor || this.isModerator || this.isUser;
+    },
+    // Only Admin/Editor can create/edit
+    canWritePosts() {
+      return this.isAdmin || this.isEditor;
     },
     canAccessPosts() {
       // Admin, Editor, Moderator can see posts

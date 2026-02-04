@@ -1,23 +1,69 @@
 <template>
-  <div>
-    <h2>Posts</h2>
-
-    <!-- Create / Edit -->
-    <div v-if="canWrite">
-      <input v-model="form.title" placeholder="Title" />
-      <textarea v-model="form.content" placeholder="Content"></textarea>
-      <button @click="submitPost">{{ editingId ? 'Update' : 'Create' }}</button>
+  <div class="card mb-4">
+    <div class="card-header fw-bold">
+      Posts
     </div>
 
-    <hr />
+    <div class="card-body">
+      <!-- Create / Edit -->
+      <div v-if="canWrite" class="mb-4">
+        <div class="mb-2">
+          <input
+            v-model="form.title"
+            class="form-control"
+            placeholder="Post title"
+          />
+        </div>
 
-    <!-- List -->
-    <div v-for="post in posts" :key="post.id" style="margin-bottom: 16px;">
-      <h4>{{ post.title }}</h4>
-      <p>{{ post.content }}</p>
-      <button v-if="canWrite" @click="editPost(post)">Edit</button>
-      <button v-if="isAdmin" @click="deletePost(post.id)">Delete</button>
-      <button v-if="isModerator" @click="requestUpdate(post)">Request Update</button>
+        <div class="mb-2">
+          <textarea
+            v-model="form.content"
+            class="form-control"
+            rows="3"
+            placeholder="Post content"
+          ></textarea>
+        </div>
+
+        <button class="btn btn-success" @click="submitPost">
+          {{ editingId ? 'Update Post' : 'Create Post' }}
+        </button>
+      </div>
+
+      <hr />
+
+      <!-- List -->
+      <div v-for="post in posts" :key="post.id" class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">{{ post.content }}</p>
+
+          <div class="d-flex gap-2">
+            <button
+              v-if="isAdmin"
+              class="btn btn-outline-primary btn-sm"
+              @click="editPost(post)"
+            >
+              Edit
+            </button>
+
+            <button
+              v-if="isAdmin"
+              class="btn btn-outline-danger btn-sm"
+              @click="deletePost(post.id)"
+            >
+              Delete
+            </button>
+
+            <button
+              v-if="isModerator"
+              class="btn btn-outline-warning btn-sm"
+              @click="requestUpdate(post)"
+            >
+              Request Update
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
